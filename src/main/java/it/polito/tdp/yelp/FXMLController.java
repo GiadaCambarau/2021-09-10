@@ -5,7 +5,13 @@
 package it.polito.tdp.yelp;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,13 +43,13 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbCitta"
-    private ComboBox<?> cmbCitta; // Value injected by FXMLLoader
+    private ComboBox<String> cmbCitta; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB1"
-    private ComboBox<?> cmbB1; // Value injected by FXMLLoader
+    private ComboBox<Business> cmbB1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB2"
-    private ComboBox<?> cmbB2; // Value injected by FXMLLoader
+    private ComboBox<Business> cmbB2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -51,17 +57,40 @@ public class FXMLController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	
+    	if (cmbCitta.getValue()  != null) {
+    		String c = cmbCitta.getValue();
+    		model.creaGrafo(c);
+        	txtResult.appendText("Verici: "+ model.getV()+"\n");
+        	txtResult.appendText("Archi: "+ model.getA()+"\n");
+        	List <Business> vertici= new ArrayList<>(model.getVertici());
+        	Collections.sort(vertici);
+        	cmbB1.getItems().addAll(vertici);
+    	}else {
+    		txtResult.setText("scelgi");
+    		return;
+    	}
+    	
     }
 
     @FXML
     void doCalcolaLocaleDistante(ActionEvent event) {
-
+    	if (cmbB1.getValue() != null) {
+    		Business b = cmbB1.getValue();
+	    	Business b1 = model.trovaLontano(b);
+	    	txtResult.appendText("Il locale più lontano è: "+"\n");
+	    	txtResult.appendText(b1 + " distante "+ model.getDistanza());
+	 
+    	}else {
+    		txtResult.setText("Scegli un business");
+    		return;
+    	}
+    
     	
     }
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
-
+    	
     }
 
 
@@ -80,5 +109,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	cmbCitta.getItems().addAll(model.getCities());
     }
 }
